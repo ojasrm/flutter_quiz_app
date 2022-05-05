@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,33 +15,70 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  static const _questions = [
+    {
+      'questionText': 'Which one is movie of MCU?',
+      'answers': [
+        {'text': 'Batman', 'score': 0},
+        {'text': 'Superman', 'score': 0},
+        {'text': 'Iron Man', 'score': 1},
+        {'text': 'Wonder Woman', 'score': 0},
+      ],
+    },
+    {
+      'questionText': 'Which one is movie of DC?',
+      'answers': [
+        {'text': 'Thor', 'score': 0},
+        {'text': 'Spiderman', 'score': 0},
+        {'text': 'Captain America', 'score': 0},
+        {'text': 'Aquaman', 'score': 1},
+      ],
+    },
+    {
+      'questionText': 'Which movie is not directed by Christofer Nolan?',
+      'answers': [
+        {'text': 'Batman Begins', 'score': 0},
+        {'text': 'Interstellar', 'score': 0},
+        {'text': 'Skyfall', 'score': 1},
+        {'text': 'Tenet', 'score': 0},
+      ],
+    },
+  ];
   var _questionIndex = 0;
-  void _answerQuestion() {
+  var _totalScore = 0;
+
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
     print(_questionIndex);
+    if (_questionIndex < _questions.length) {
+      print('We have more questions');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      'What\'s your favourite color?',
-      'What\'s your favourite animal?',
-    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('My first app'),
         ),
-        body: Column(
-          children: [
-            Question(questions[_questionIndex]),
-            Answer(_answerQuestion),
-            Answer(_answerQuestion),
-            Answer(_answerQuestion),
-          ],
-        ),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionIndex: _questionIndex,
+                questions: _questions,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
